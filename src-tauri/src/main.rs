@@ -17,11 +17,13 @@ fn main() {
 }
 
 #[tauri::command]
-fn blur(_infile: String, _outfile: String, _blur_amt: f32) {
-  let img = image::open(_infile).expect("Failed to open INFILE.");
+fn blur(_infile: String, _blur_amt: f32) {
+  let img = image::open(&_infile).expect("Failed to open INFILE.");
   let img2 = img.blur(_blur_amt);
+// Generate the output file path
+  let output_file = format!("blurred_{}", &_infile);
 
-  img2.save(_outfile).expect("Failed writing OUTFILE.");
+  img2.save(&output_file).expect("Failed writing blurred image file.");
 }
 
 #[tauri::command]

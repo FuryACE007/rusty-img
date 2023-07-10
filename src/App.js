@@ -6,28 +6,38 @@ function App() {
   const cardGridCommonStyle = "flex-col text-slate-900 font-semibold  uppercase items-center min-h-full bg-[#1D232A]";
   
   const [inputFile, setInputFile] = useState('');
-  const [outputFile, setOutputFile] = useState('');
   const [blurAmount, setBlurAmount] = useState(2.0);
 
   const handleInputChange = (event) => {
     const file = event.target.files[0];
+    console.log(file);
     setInputFile(file);
   };
 
-  const handleOutputChange = (event) => {
-    setOutputFile(event.target.value);
-  };
+  // const handleOutputChange = (event) => {
+  //   setOutputFile(event.target.value);
+  // };
 
   const handleBlurAmountChange = (event) => {
     setBlurAmount(parseFloat(event.target.value));
   };
 
-  const handleBlur = () => {
-    invoke('blur', {
-      inputFile,
-      outputFile,
-      blurAmount,
+  const handleBlur = async () => {
+    if (!inputFile) {
+      console.log('No input file selected');
+      return;
+    }
+  
+    const response = await invoke('blur', {
+      _infile: inputFile.path,
+      _blur_amt: blurAmount,
     });
+  
+    if (response && response.success) {
+      console.log('Image blurred successfully');
+    } else {
+      console.log('Failed to blur image');
+    }
   };
 
   return (
@@ -58,15 +68,6 @@ function App() {
                 />
               </div>
               <div>
-                <label htmlFor="outputFile">Output File:</label>
-                <input
-                  type="text"
-                  id="outputFile"
-                  value={outputFile}
-                  onChange={handleOutputChange}
-                />
-              </div>
-              <div>
                 <label htmlFor="blurAmount">Blur Amount:</label>
                 <input
                   type="number"
@@ -75,6 +76,7 @@ function App() {
                   onChange={handleBlurAmountChange}
                 />
               </div>
+              <button onClick={handleBlur}>Blur Image</button>
             </div>
             <div className={cardStyle}>Brighten</div>
           </div>
