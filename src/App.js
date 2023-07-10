@@ -42,7 +42,7 @@ function App() {
 
   return (
     <div className="flex">
-      <div className="flex-col w-screen mx-auto items-center text-center">
+      <div className="flex-col w-screen mx-auto text-center">
         <div className="my-5">
           <h1 className="text-2xl font-semibold text-[#F8F1F1] mt-10 uppercase">
             Image editor with{" "}
