@@ -14,10 +14,6 @@ function App() {
     setInputFile(file);
   };
 
-  // const handleOutputChange = (event) => {
-  //   setOutputFile(event.target.value);
-  // };
-
   const handleBlurAmountChange = (event) => {
     setBlurAmount(parseFloat(event.target.value));
   };
@@ -27,17 +23,21 @@ function App() {
       console.log('No input file selected');
       return;
     }
-  
-    const response = await invoke('blur', {
-      _infile: inputFile.path,
-      _blur_amt: blurAmount,
-    });
-  
-    if (response && response.success) {
-      console.log('Image blurred successfully');
-    } else {
-      console.log('Failed to blur image');
-    }
+    const fileReader = new FileReader();
+    fileReader.onload = async () => {
+      const fileData = new Uint8Array(fileReader.result);
+      const response = await invoke('blur', {
+        infile: Array.from(fileData),
+        blurAmt: blurAmount,
+      });
+    
+      if (response && response.success) {
+        console.log('Image blurred successfully');
+      } else {
+        console.log('Failed to blur image');
+      }
+    };
+    fileReader.readAsArrayBuffer(inputFile);
   };
 
   return (

@@ -1,6 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 use image::{DynamicImage, GenericImageView};
+// use std::io::Read;
 fn main() {
   tauri::Builder::default()
   .invoke_handler(tauri::generate_handler![
@@ -17,13 +18,14 @@ fn main() {
 }
 
 #[tauri::command]
-fn blur(_infile: String, _blur_amt: f32) {
-  let img = image::open(&_infile).expect("Failed to open INFILE.");
-  let img2 = img.blur(_blur_amt);
-// Generate the output file path
-  let output_file = format!("blurred_{}", &_infile);
+fn blur(infile: Vec<u8>, blur_amt: f32) {
+    let img = image::load_from_memory(&infile).expect("Failed to load input image.");
+    let img2 = img.blur(blur_amt);
 
-  img2.save(&output_file).expect("Failed writing blurred image file.");
+    // Generate the output file path
+    let output_file = format!("blurred.png");
+
+    img2.save(&output_file).expect("Failed writing blurred image file.");
 }
 
 #[tauri::command]
