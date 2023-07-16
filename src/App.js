@@ -1,3 +1,4 @@
+import Ascii from "./components/Ascii";
 import Blur from "./components/Blur";
 import Brighten from "./components/Brighten";
 import Crop from "./components/Crop";
@@ -32,6 +33,7 @@ function App() {
             <Rotate />
             <Invert />
             <Fractal />
+            <Ascii />
           </div>
         </div>
       </div>

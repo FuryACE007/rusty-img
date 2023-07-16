@@ -2,6 +2,8 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 use image::{DynamicImage, GenericImageView};
 use base64;
+use std::fs::File;
+use std::io::Write;
 
 fn main() {
   tauri::Builder::default()
@@ -87,35 +89,33 @@ fn invert(infile: String) {
   img.save(&output_file).expect("Failed writing rotated image file.");
 }
 
-#[tauri::command]
-// helper function
-
-fn get_str_ascii(intent :u8)-> &'static str{
-  let index = intent/32;
-  let ascii = [" ",".",",","-","~","+","=","@"];
-  return ascii[index as usize];
+fn get_str_ascii(intent: u8) -> &'static str {
+  let index = intent / 32;
+  let ascii = [" ", ".", ",", "-", "~", "+", "=", "@"];
+  ascii[index as usize]
 }
 
 #[tauri::command]
-fn ascii_art(dir: &str, scale: u32){
-  let img = image::open(dir).unwrap();
-  println!("{:?}", img.dimensions());
-  let (width,height) = img.dimensions();
-  for y in 0..height{
-      for x in 0..width{
-          if y % (scale * 2) == 0 && x % scale ==0{
-              let pix = img.get_pixel(x,y);
-              let mut intent = pix[0]/3 + pix[1]/3 + pix[2]/3;
-              if pix[3] ==0{
-                  intent = 0;
-              }
-              print!("{}",get_str_ascii(intent));
-          } 
+fn ascii_art(dir: String, scale: u32) {
+  let infile_bytes = base64::decode(&dir).expect("Failed to decode input file data.");
+  let img = image::load_from_memory(&infile_bytes).expect("Failed to load input image.");
+  let (width, height) = img.dimensions();
+  let mut result = String::new();
+
+  for y in (0..height).step_by((scale * 2) as usize) {
+      for x in (0..width).step_by(scale as usize) {
+          let pix = img.get_pixel(x, y);
+          let mut intent = (pix[0] / 3 + pix[1] / 3 + pix[2] / 3) as u8;
+          if pix[3] == 0 {
+              intent = 0;
+          }
+          result.push_str(get_str_ascii(intent));
       }
-      if y%(scale*2)==0{
-          println!("");
-      }
+      result.push('\n');
   }
+
+  let output_file = "asciiart.txt";
+  std::fs::write(output_file, result).expect("Failed to write to output file.");
 }
 
 #[tauri::command]
