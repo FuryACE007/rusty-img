@@ -1,84 +1,44 @@
-import { useState } from "react";
-import { invoke } from '@tauri-apps/api'
+import Ascii from "./components/Ascii";
+import Blur from "./components/Blur";
+import Brighten from "./components/Brighten";
+import Crop from "./components/Crop";
+import Fractal from "./components/Fractal";
+import Invert from "./components/Invert";
+import Rotate from "./components/Rotate";
+
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 function App() {
-  const cardStyle = "bg-slate-50 mx-5 my-8 rounded-3xl min-h-[10rem] py-5 ";
-  const cardGridCommonStyle = "flex-col text-slate-900 font-semibold  uppercase items-center min-h-full bg-[#1D232A]";
-  
-  const [inputFile, setInputFile] = useState('');
-  const [blurAmount, setBlurAmount] = useState(2.0);
-
-  const handleInputChange = (event) => {
-    const file = event.target.files[0];
-    console.log(file);
-    setInputFile(file);
-  };
-
-  const handleBlurAmountChange = (event) => {
-    setBlurAmount(parseFloat(event.target.value));
-  };
-
-  const handleBlur = async () => {
-    if (!inputFile) {
-      console.log('No input file selected');
-      return;
-    }
-    const fileReader = new FileReader();
-    fileReader.onload = async () => {
-      const fileData = new Uint8Array(fileReader.result);
-      const response = await invoke('blur', {
-        infile: Array.from(fileData),
-        blurAmt: blurAmount,
-      });
-    
-      if (response && response.success) {
-        console.log('Image blurred successfully');
-      } else {
-        console.log('Failed to blur image');
-      }
-    };
-    fileReader.readAsArrayBuffer(inputFile);
-  };
-
+  const cardGridCommonStyle =
+    "flex-col text-slate-100 font-semibold  uppercase items-center min-h-full bg-[#1D232A]";
   return (
     <div className="flex">
       <div className="flex-col w-screen mx-auto text-center">
-        <div className="my-5">
-          <h1 className="text-2xl font-semibold text-[#F8F1F1] mt-10 uppercase">
-            Image editor with{" "}
-            <span className="text-[#8247E5] border-2 border-[#8247E5] px-2 py-1 rounded-xl">
-              the power of Rust 🔥
+        <div>
+          <h1 className="text-2xl font-semibold text-[#F8F1F1] mt-7 uppercase">
+            <span className="text-[#8247E5] bg-[#F8F1F1] px-2 py-1 rounded-tl-lg">
+              Rusty{" "}
+            </span>
+            <span className="text-[#F8F1F1] bg-[#8247E5] font-bold border-2 border-[#8247E5] px-2 py-1 rounded-r-xl">
+              IMG
             </span>
           </h1>
-          <h3 className="text-lg text-slate-300 font-medium my-10 uppercase">
+          <h3 className="text-lg text-slate-300 font-medium my-7 uppercase">
             Select from the below options:
           </h3>
         </div>
         <div className={cardGridCommonStyle}>
-          <div className="grid grid-cols-2 gap-3">
-            <div className={cardStyle}>
-              <h3>Blur Image</h3>
-              <div>
-                <label htmlFor="inputFile">Input File:</label>
-                <input
-                  type="file"
-                  id="inputFile"
-                  accept="image/*"
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div>
-                <label htmlFor="blurAmount">Blur Amount:</label>
-                <input
-                  type="number"
-                  id="blurAmount"
-                  value={blurAmount}
-                  onChange={handleBlurAmountChange}
-                />
-              </div>
-              <button onClick={handleBlur}>Blur Image</button>
-            </div>
-            <div className={cardStyle}>Brighten</div>
+          <div className="grid grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-3">
+            <Blur />
+            <Brighten />
+            <Crop />
+            <Rotate />
+            <Invert />
+            <Fractal />
+            <Ascii />
+            <ToastContainer />
           </div>
         </div>
       </div>

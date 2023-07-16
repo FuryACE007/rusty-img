@@ -1,7 +1,8 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-use image::{DynamicImage, GenericImageView};
-// use std::io::Read;
+use image::{GenericImageView};
+use base64;
+
 fn main() {
   tauri::Builder::default()
   .invoke_handler(tauri::generate_handler![
@@ -18,7 +19,7 @@ fn main() {
 }
 
 #[tauri::command]
-fn blur(infile: Vec<u8>, blur_amt: f32) {
+fn blur(infile: Vec<u8>, blur_amt: f32) -> String {
     let img = image::load_from_memory(&infile).expect("Failed to load input image.");
     let img2 = img.blur(blur_amt);
 
@@ -26,84 +27,110 @@ fn blur(infile: Vec<u8>, blur_amt: f32) {
     let output_file = format!("blurred.png");
 
     img2.save(&output_file).expect("Failed writing blurred image file.");
+
+    return output_file;
 }
 
 #[tauri::command]
-fn brighten(_infile: String, _outfile: String, _value: i32) {
-  let img = image::open(_infile).expect("Couldn't open image");
-  let img2 = img.brighten(_value);
+fn brighten(infile: String, brighten_value: i32) -> String {
+    let infile_bytes = base64::decode(infile).expect("Failed to decode input file data.");
+    let img = image::load_from_memory(&infile_bytes).expect("Failed to load input image.");
+    let img2 = img.brighten(brighten_value);
 
-  img2.save(_outfile).expect("Couldn't save image");
+    let output_file = format!("brighten.png");
+
+    img2.save(&output_file).expect("Failed writing brighten image file.");
+
+    return output_file;
+}
+
+
+#[tauri::command]
+fn crop(infile: String, x: u32, y: u32, width: u32, height: u32) -> String {
+  let infile_bytes = base64::decode(infile).expect("Failed to decode input file data.");
+
+  let mut img = image::load_from_memory(&infile_bytes).expect("Failed to load input image.");
+  let img2 = img.crop(x, y, width, height);
+
+  let output_file = format!("cropped.png");
+
+  img2.save(&output_file).expect("Failed writing brighten image file.");
+
+  return output_file;
 }
 
 #[tauri::command]
-fn crop(_infile: String, _outfile: String, _x: u32, _y: u32, _width: u32, _height: u32) {
-  let mut img = image::open(_infile).expect("Can't open image");
-  let img2 = img.crop(_x, _y, _width, _height);
+fn rotate(infile: String, rotation_value: u32) -> String {
+  let infile_bytes = base64::decode(infile).expect("Failed to decode input file data.");
 
-  img2.save(_outfile).unwrap();
-}
+  let img = image::load_from_memory(&infile_bytes).expect("Failed to load input image.");
+  let img2 ;
 
-#[tauri::command]
-fn rotate(_infile: String, _outfile: String, _rotation_value: u32) {
-  let img = image::open(_infile).expect("Can't open image");
-  let mut img2: DynamicImage;
-
-  if _rotation_value == 90 {
+  if rotation_value >= 90 && rotation_value < 180 {
      img2 = img.rotate90();
-  } else if _rotation_value == 180 {
+  } else if rotation_value >= 180 && rotation_value < 270{
       img2 = img.rotate180();
-  } else if _rotation_value == 270 {
+  } else if rotation_value >= 270 {
       img2 = img.rotate270();
   } else {
       println!("Invalid rotation value ( choose either 90 or 180 or 270 )");
       std::process::exit(1);
   }
 
-  img2.save(_outfile).expect("Couldn't save image");
+  let output_file = format!("rotated.png");
+
+  img2.save(&output_file).expect("Failed writing rotated image file.");
+
+  return output_file;
 }
 
+
 #[tauri::command]
-fn invert(_infile: String, _outfile: String) {
-  let mut img = image::open(_infile).expect("Can't open image");
+fn invert(infile: String) -> String {
+  let infile_bytes = base64::decode(infile).expect("Failed to decode input file data.");
+
+  let mut img = image::load_from_memory(&infile_bytes).expect("Failed to load input image.");
 
   img.invert();
-  img.save(_outfile).unwrap();
+  let output_file = format!("inverted.png");
+
+  img.save(&output_file).expect("Failed writing rotated image file.");
+
+  return output_file;
+}
+
+fn get_str_ascii(intent: u8) -> &'static str {
+  let index = intent / 32;
+  let ascii = [" ", ".", ",", "-", "~", "+", "=", "@"];
+  ascii[index as usize]
 }
 
 #[tauri::command]
-// helper function
+fn ascii_art(dir: String, scale: u32) -> String {
+  let infile_bytes = base64::decode(&dir).expect("Failed to decode input file data.");
+  let img = image::load_from_memory(&infile_bytes).expect("Failed to load input image.");
+  let (width, height) = img.dimensions();
+  let mut result = String::new();
 
-fn get_str_ascii(intent :u8)-> &'static str{
-  let index = intent/32;
-  let ascii = [" ",".",",","-","~","+","=","@"];
-  return ascii[index as usize];
-}
-
-#[tauri::command]
-fn ascii_art(dir: &str, scale: u32){
-  let img = image::open(dir).unwrap();
-  println!("{:?}", img.dimensions());
-  let (width,height) = img.dimensions();
-  for y in 0..height{
-      for x in 0..width{
-          if y % (scale * 2) == 0 && x % scale ==0{
-              let pix = img.get_pixel(x,y);
-              let mut intent = pix[0]/3 + pix[1]/3 + pix[2]/3;
-              if pix[3] ==0{
-                  intent = 0;
-              }
-              print!("{}",get_str_ascii(intent));
-          } 
+  for y in (0..height).step_by((scale * 2) as usize) {
+      for x in (0..width).step_by(scale as usize) {
+          let pix = img.get_pixel(x, y);
+          let mut intent = (pix[0] / 3 + pix[1] / 3 + pix[2] / 3) as u8;
+          if pix[3] == 0 {
+              intent = 0;
+          }
+          result.push_str(get_str_ascii(intent));
       }
-      if y%(scale*2)==0{
-          println!("");
-      }
+      result.push('\n');
   }
+
+  let output_file = "asciiart.txt";
+  std::fs::write(output_file, &result).expect("Failed to write to output file.");
+  return result;
 }
 
 #[tauri::command]
-fn fractal(_outfile: String) {
+fn fractal() -> String {
   let width = 800;
   let height = 800;
 
@@ -133,6 +160,8 @@ fn fractal(_outfile: String) {
 
       *pixel = image::Rgb([red, green, blue]);
   }
+  let output_file = format!("fractal.png");
 
-  imgbuf.save(_outfile).unwrap();
+  imgbuf.save(&output_file).unwrap();
+  return output_file;
 }
