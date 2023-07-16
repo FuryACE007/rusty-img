@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api"
+import { useState } from "react"
 
-const Brighten = () => {
-  const cardStyle =
+const Rotate = () => {
+    const cardStyle =
     "bg-[#16181d] shadow-2xl border-[#664eae] hover:border-[#8247E5] transition duration-500 border-2 md:mx-20 mx-5 my-8 rounded-3xl min-h-[10rem] pb-5 ";
 
   const [inputFile, setInputFile] = useState("");
-  const [brightenValue, setBrightenValue] = useState(5);
+  const [rotationValue, setrRotationValue] = useState(90);
 
   const handleInputChange = (event) => {
     const file = event.target.files[0];
@@ -14,11 +14,11 @@ const Brighten = () => {
     setInputFile(file);
   };
 
-  const handleBrightenValueChange = (event) => {
-    setBrightenValue(parseFloat(event.target.value));
+  const handleRotationValueChange = (event) => {
+    setrRotationValue(parseFloat(event.target.value));
   };
 
-  const handleBrighten = async () => {
+  const handleRotate = async () => {
     if (!inputFile) {
       console.log("No input file selected");
       return;
@@ -26,24 +26,23 @@ const Brighten = () => {
     const fileReader = new FileReader();
     fileReader.onload = async () => {
       const base64Data = fileReader.result.split(",")[1]; // Extract the base64-encoded data
-      const response = await invoke("brighten", {
+      const response = await invoke("rotate", {
         infile: base64Data,
-        brightenValue: brightenValue,
+        rotationValue: rotationValue,
       });
 
       if (response && response.success) {
-        console.log("Image brightened successfully");
+        console.log("Image rotated successfully");
       } else {
-        console.log("Failed to brighten the image");
+        console.log("Failed to rotate the image");
       }
     };
     fileReader.readAsDataURL(inputFile); // Read the file as a data URL
   };
-
   return (
     <div className={cardStyle}>
       <h3 className=" border-b-2 border-slate-600 bg-[#23272f] py-3 mb-4 rounded-t-3xl">
-        Brighten Image
+        Rotate Image
       </h3>
       <div>
         <input
@@ -55,25 +54,26 @@ const Brighten = () => {
         />
       </div>
       <div>
-        <label htmlFor="brightenValue" className="mx-3">
-          Brighten Value:
+        <label htmlFor="rotationValue" className="mx-3">
+          Roatation Value: <br/>
+          <span className="text-sm text-slate-300">90, 180, 270</span>
         </label>
         <input
           type="number"
-          id="brightenValue"
-          value={brightenValue}
-          onChange={handleBrightenValueChange}
+          id="rotationValue"
+          value={rotationValue}
+          onChange={handleRotationValueChange}
           className=" text-slate-800 rounded-lg px-4 my-2 text-center"
         />
       </div>
       <button
-        onClick={handleBrighten}
+        onClick={handleRotate}
         className=" py-2 px-3 mt-7 bg-[#8247E5] hover:bg-[#664eae] transition ease-linear rounded-lg"
       >
-        Brighten Image
+        Rotate Image
       </button>
     </div>
-  );
-};
+  )
+}
 
-export default Brighten;
+export default Rotate

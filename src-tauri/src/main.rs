@@ -42,35 +42,42 @@ fn brighten(infile: String, brighten_value: i32) {
 
 
 #[tauri::command]
-fn crop(_infile: String, _outfile: String, _x: u32, _y: u32, _width: u32, _height: u32) {
-  let mut img = image::open(_infile).expect("Can't open image");
-  let img2 = img.crop(_x, _y, _width, _height);
+fn crop(infile: String, x: u32, y: u32, width: u32, height: u32) {
+  let infile_bytes = base64::decode(infile).expect("Failed to decode input file data.");
 
-  img2.save(_outfile).unwrap();
-}
+  let mut img = image::load_from_memory(&infile_bytes).expect("Failed to load input image.");
+  let img2 = img.crop(x, y, width, height);
+
+  let output_file = format!("cropped.png");
+
+  img2.save(&output_file).expect("Failed writing brighten image file.");}
 
 #[tauri::command]
-fn rotate(_infile: String, _outfile: String, _rotation_value: u32) {
-  let img = image::open(_infile).expect("Can't open image");
-  let mut img2: DynamicImage;
+fn rotate(infile: String, rotation_value: u32) {
+  let infile_bytes = base64::decode(infile).expect("Failed to decode input file data.");
 
-  if _rotation_value == 90 {
+  let img = image::load_from_memory(&infile_bytes).expect("Failed to load input image.");
+  let img2 ;
+
+  if rotation_value == 90 {
      img2 = img.rotate90();
-  } else if _rotation_value == 180 {
+  } else if rotation_value == 180 {
       img2 = img.rotate180();
-  } else if _rotation_value == 270 {
+  } else if rotation_value == 270 {
       img2 = img.rotate270();
   } else {
       println!("Invalid rotation value ( choose either 90 or 180 or 270 )");
       std::process::exit(1);
   }
 
-  img2.save(_outfile).expect("Couldn't save image");
-}
+  let output_file = format!("rotated.png");
+
+  img2.save(&output_file).expect("Failed writing rotated image file.");}
+
 
 #[tauri::command]
 fn invert(_infile: String, _outfile: String) {
-  let mut img = image::open(_infile).expect("Can't open image");
+  let mut img: DynamicImage = image::open(_infile).expect("Can't open image");
 
   img.invert();
   img.save(_outfile).unwrap();
