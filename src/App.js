@@ -1,6 +1,7 @@
 import Blur from "./components/Blur";
 import Brighten from "./components/Brighten";
 import Crop from "./components/Crop";
+import Invert from "./components/Invert";
 import Rotate from "./components/Rotate";
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
             <Brighten />
             <Crop />
             <Rotate />
+            <Invert />
           </div>
         </div>
       </div>

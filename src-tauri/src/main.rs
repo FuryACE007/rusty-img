@@ -59,11 +59,11 @@ fn rotate(infile: String, rotation_value: u32) {
   let img = image::load_from_memory(&infile_bytes).expect("Failed to load input image.");
   let img2 ;
 
-  if rotation_value == 90 {
+  if rotation_value >= 90 && rotation_value < 180 {
      img2 = img.rotate90();
-  } else if rotation_value == 180 {
+  } else if rotation_value >= 180 && rotation_value < 270{
       img2 = img.rotate180();
-  } else if rotation_value == 270 {
+  } else if rotation_value >= 270 {
       img2 = img.rotate270();
   } else {
       println!("Invalid rotation value ( choose either 90 or 180 or 270 )");
@@ -76,11 +76,15 @@ fn rotate(infile: String, rotation_value: u32) {
 
 
 #[tauri::command]
-fn invert(_infile: String, _outfile: String) {
-  let mut img: DynamicImage = image::open(_infile).expect("Can't open image");
+fn invert(infile: String) {
+  let infile_bytes = base64::decode(infile).expect("Failed to decode input file data.");
+
+  let mut img = image::load_from_memory(&infile_bytes).expect("Failed to load input image.");
 
   img.invert();
-  img.save(_outfile).unwrap();
+  let output_file = format!("inverted.png");
+
+  img.save(&output_file).expect("Failed writing rotated image file.");
 }
 
 #[tauri::command]
