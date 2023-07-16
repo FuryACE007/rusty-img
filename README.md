@@ -57,7 +57,7 @@ Build the app
 
 Demo is available on this linkedin post of mine.
 
-https://www.linkedin.com/posts/sudhanshu-shekhar-770678198_30daysofcodechallenge-rustlang-rustdeveloper-activity-7086340377019887616-VeWl?utm_source=share&utm_medium=member_desktop
+https://www.linkedin.com/posts/sudhanshu-shekhar-770678198_30daysofcodechallenge-rustlang-rustdeveloper-activity-7086376188583018496-s6eR?utm_source=share&utm_medium=member_desktop
 ## Tech Stack
 
 **Client:** React, TailwindCSS
