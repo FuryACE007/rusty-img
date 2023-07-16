@@ -73,5 +73,5 @@ Just fork this repo and add your creativity to it XD
 
 ## Screenshots
 
-![App Screenshot](https://pasteboard.co/fjTgNpAA1xJ8.png)
+https://pasteboard.co/fjTgNpAA1xJ8.png
 
