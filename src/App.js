@@ -1,6 +1,7 @@
 import Blur from "./components/Blur";
 import Brighten from "./components/Brighten";
 import Crop from "./components/Crop";
+import Fractal from "./components/Fractal";
 import Invert from "./components/Invert";
 import Rotate from "./components/Rotate";
 
@@ -30,6 +31,7 @@ function App() {
             <Crop />
             <Rotate />
             <Invert />
+            <Fractal />
           </div>
         </div>
       </div>

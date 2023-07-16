@@ -119,7 +119,7 @@ fn ascii_art(dir: &str, scale: u32){
 }
 
 #[tauri::command]
-fn fractal(_outfile: String) {
+fn fractal() {
   let width = 800;
   let height = 800;
 
@@ -149,6 +149,7 @@ fn fractal(_outfile: String) {
 
       *pixel = image::Rgb([red, green, blue]);
   }
+  let output_file = format!("fractal.png");
 
-  imgbuf.save(_outfile).unwrap();
+  imgbuf.save(output_file).unwrap();
 }
