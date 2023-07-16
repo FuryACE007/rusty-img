@@ -1,7 +1,8 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 use image::{DynamicImage, GenericImageView};
-// use std::io::Read;
+use base64;
+
 fn main() {
   tauri::Builder::default()
   .invoke_handler(tauri::generate_handler![
@@ -29,12 +30,16 @@ fn blur(infile: Vec<u8>, blur_amt: f32) {
 }
 
 #[tauri::command]
-fn brighten(_infile: String, _outfile: String, _value: i32) {
-  let img = image::open(_infile).expect("Couldn't open image");
-  let img2 = img.brighten(_value);
+fn brighten(infile: String, brighten_value: i32) {
+    let infile_bytes = base64::decode(infile).expect("Failed to decode input file data.");
+    let img = image::load_from_memory(&infile_bytes).expect("Failed to load input image.");
+    let img2 = img.brighten(brighten_value);
 
-  img2.save(_outfile).expect("Couldn't save image");
+    let output_file = format!("brighten.png");
+
+    img2.save(&output_file).expect("Failed writing brighten image file.");
 }
+
 
 #[tauri::command]
 fn crop(_infile: String, _outfile: String, _x: u32, _y: u32, _width: u32, _height: u32) {
