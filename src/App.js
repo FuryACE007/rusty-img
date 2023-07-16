@@ -6,6 +6,10 @@ import Fractal from "./components/Fractal";
 import Invert from "./components/Invert";
 import Rotate from "./components/Rotate";
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 function App() {
   const cardGridCommonStyle =
     "flex-col text-slate-100 font-semibold  uppercase items-center min-h-full bg-[#1D232A]";
@@ -34,6 +38,7 @@ function App() {
             <Invert />
             <Fractal />
             <Ascii />
+            <ToastContainer />
           </div>
         </div>
       </div>

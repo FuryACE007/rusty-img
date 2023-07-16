@@ -1,25 +1,17 @@
 import { invoke } from "@tauri-apps/api";
-import { useState } from "react";
+import { toast } from "react-toastify";
 
 const Fractal = () => {
   const cardStyle =
     "bg-[#16181d] shadow-2xl border-[#664eae] hover:border-[#8247E5] transition duration-500 border-2 md:mx-20 mx-5 my-8 rounded-3xl min-h-[10rem] pb-5 ";
 
-  const [inputFile, setInputFile] = useState("");
-
-  const handleInputChange = (event) => {
-    const file = event.target.files[0];
-    console.log(file);
-    setInputFile(file);
-  };
-
   const handleFractal = async () => {
     const response = await invoke("fractal");
 
-    if (response && response.success) {
-      console.log("Fractal generated successfully");
+    if (response) {
+      toast.success("Fractal generated successfully");
     } else {
-      console.log("Failed to generate the image");
+      toast.error("Failed to generate the image");
     }
   };
   return (

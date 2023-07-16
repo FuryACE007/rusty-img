@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 const Rotate = () => {
   const cardStyle =
@@ -10,7 +11,6 @@ const Rotate = () => {
 
   const handleInputChange = (event) => {
     const file = event.target.files[0];
-    console.log(file);
     setInputFile(file);
   };
 
@@ -20,7 +20,7 @@ const Rotate = () => {
 
   const handleRotate = async () => {
     if (!inputFile) {
-      console.log("No input file selected");
+      toast.info("No input file selected");
       return;
     }
     const fileReader = new FileReader();
@@ -31,10 +31,10 @@ const Rotate = () => {
         rotationValue: rotationValue,
       });
 
-      if (response && response.success) {
-        console.log("Image rotated successfully");
+      if (response) {
+        toast.success("Image rotated successfully");
       } else {
-        console.log("Failed to rotate the image");
+        toast.error("Failed to rotate the image");
       }
     };
     fileReader.readAsDataURL(inputFile); // Read the file as a data URL

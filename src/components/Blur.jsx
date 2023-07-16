@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { invoke } from "@tauri-apps/api";
+import { toast } from "react-toastify";
 
 const Blur = () => {
   const cardStyle =
     "bg-[#16181d] shadow-2xl border-[#664eae] hover:border-[#8247E5] transition duration-500 border-2 md:mx-20 mx-5 my-8 rounded-3xl min-h-[10rem] pb-5 ";
-  const cardGridCommonStyle =
-    "flex-col text-slate-100 font-semibold  uppercase items-center min-h-full bg-[#1D232A]";
 
   const [inputFile, setInputFile] = useState("");
   const [blurAmount, setBlurAmount] = useState(2.0);
@@ -22,7 +21,7 @@ const Blur = () => {
 
   const handleBlur = async () => {
     if (!inputFile) {
-      console.log("No input file selected");
+      toast.info("No input file selected");
       return;
     }
     const fileReader = new FileReader();
@@ -33,10 +32,10 @@ const Blur = () => {
         blurAmt: blurAmount,
       });
 
-      if (response && response.success) {
-        console.log("Image blurred successfully");
+      if (response) {
+        toast.success("Image blurred successfully");
       } else {
-        console.log("Failed to blur image");
+        toast.error("Failed to blur image");
       }
     };
     fileReader.readAsArrayBuffer(inputFile);

@@ -1,9 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-use image::{DynamicImage, GenericImageView};
+use image::{GenericImageView};
 use base64;
-use std::fs::File;
-use std::io::Write;
 
 fn main() {
   tauri::Builder::default()
@@ -21,7 +19,7 @@ fn main() {
 }
 
 #[tauri::command]
-fn blur(infile: Vec<u8>, blur_amt: f32) {
+fn blur(infile: Vec<u8>, blur_amt: f32) -> String {
     let img = image::load_from_memory(&infile).expect("Failed to load input image.");
     let img2 = img.blur(blur_amt);
 
@@ -29,10 +27,12 @@ fn blur(infile: Vec<u8>, blur_amt: f32) {
     let output_file = format!("blurred.png");
 
     img2.save(&output_file).expect("Failed writing blurred image file.");
+
+    return output_file;
 }
 
 #[tauri::command]
-fn brighten(infile: String, brighten_value: i32) {
+fn brighten(infile: String, brighten_value: i32) -> String {
     let infile_bytes = base64::decode(infile).expect("Failed to decode input file data.");
     let img = image::load_from_memory(&infile_bytes).expect("Failed to load input image.");
     let img2 = img.brighten(brighten_value);
@@ -40,11 +40,13 @@ fn brighten(infile: String, brighten_value: i32) {
     let output_file = format!("brighten.png");
 
     img2.save(&output_file).expect("Failed writing brighten image file.");
+
+    return output_file;
 }
 
 
 #[tauri::command]
-fn crop(infile: String, x: u32, y: u32, width: u32, height: u32) {
+fn crop(infile: String, x: u32, y: u32, width: u32, height: u32) -> String {
   let infile_bytes = base64::decode(infile).expect("Failed to decode input file data.");
 
   let mut img = image::load_from_memory(&infile_bytes).expect("Failed to load input image.");
@@ -52,10 +54,13 @@ fn crop(infile: String, x: u32, y: u32, width: u32, height: u32) {
 
   let output_file = format!("cropped.png");
 
-  img2.save(&output_file).expect("Failed writing brighten image file.");}
+  img2.save(&output_file).expect("Failed writing brighten image file.");
+
+  return output_file;
+}
 
 #[tauri::command]
-fn rotate(infile: String, rotation_value: u32) {
+fn rotate(infile: String, rotation_value: u32) -> String {
   let infile_bytes = base64::decode(infile).expect("Failed to decode input file data.");
 
   let img = image::load_from_memory(&infile_bytes).expect("Failed to load input image.");
@@ -74,11 +79,14 @@ fn rotate(infile: String, rotation_value: u32) {
 
   let output_file = format!("rotated.png");
 
-  img2.save(&output_file).expect("Failed writing rotated image file.");}
+  img2.save(&output_file).expect("Failed writing rotated image file.");
+
+  return output_file;
+}
 
 
 #[tauri::command]
-fn invert(infile: String) {
+fn invert(infile: String) -> String {
   let infile_bytes = base64::decode(infile).expect("Failed to decode input file data.");
 
   let mut img = image::load_from_memory(&infile_bytes).expect("Failed to load input image.");
@@ -87,6 +95,8 @@ fn invert(infile: String) {
   let output_file = format!("inverted.png");
 
   img.save(&output_file).expect("Failed writing rotated image file.");
+
+  return output_file;
 }
 
 fn get_str_ascii(intent: u8) -> &'static str {
@@ -96,7 +106,7 @@ fn get_str_ascii(intent: u8) -> &'static str {
 }
 
 #[tauri::command]
-fn ascii_art(dir: String, scale: u32) {
+fn ascii_art(dir: String, scale: u32) -> String {
   let infile_bytes = base64::decode(&dir).expect("Failed to decode input file data.");
   let img = image::load_from_memory(&infile_bytes).expect("Failed to load input image.");
   let (width, height) = img.dimensions();
@@ -115,11 +125,12 @@ fn ascii_art(dir: String, scale: u32) {
   }
 
   let output_file = "asciiart.txt";
-  std::fs::write(output_file, result).expect("Failed to write to output file.");
+  std::fs::write(output_file, &result).expect("Failed to write to output file.");
+  return result;
 }
 
 #[tauri::command]
-fn fractal() {
+fn fractal() -> String {
   let width = 800;
   let height = 800;
 
@@ -151,5 +162,6 @@ fn fractal() {
   }
   let output_file = format!("fractal.png");
 
-  imgbuf.save(output_file).unwrap();
+  imgbuf.save(&output_file).unwrap();
+  return output_file;
 }

@@ -1,6 +1,9 @@
 import { invoke } from "@tauri-apps/api";
 import { useState } from "react";
 
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const Ascii = () => {
   const cardStyle =
     "bg-[#16181d] shadow-2xl border-[#664eae] hover:border-[#8247E5] transition duration-500 border-2 md:mx-20 mx-5 my-8 rounded-3xl min-h-[10rem] pb-5 ";
@@ -20,7 +23,7 @@ const Ascii = () => {
 
   const handleAscii = async () => {
     if (!inputFile) {
-      console.log("No input file selected");
+      toast.info("No input file selected");
       return;
     }
     const fileReader = new FileReader();
@@ -30,19 +33,18 @@ const Ascii = () => {
         dir: base64Data,
         scale: scale, // Set the desired scale value
       });
-  
-      if (response && response.success) {
-        console.log("Image ASCII art created successfully");
-        const asciiArt = response.data; // Assuming the response includes the ASCII art as a string
+      console.log(response);
+      if (response) {
+        toast.success("Image ASCII art created successfully");
+        // const asciiArt = response.data; // Assuming the response includes the ASCII art as a string
         // Perform any desired action with the ASCII art, such as saving it to a file
         // Here, you can add the code to save the ASCII art to a file, e.g., using the File API
       } else {
-        console.log("Failed to create ASCII art from the image");
+        toast.error("Failed to create ASCII art from the image");
       }
     };
     fileReader.readAsDataURL(inputFile); // Read the file as a data URL
   };
-  
 
   return (
     <div className={cardStyle}>

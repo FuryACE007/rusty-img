@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { invoke } from "@tauri-apps/api";
+import { toast } from "react-toastify";
 
 const Brighten = () => {
   const cardStyle =
@@ -10,7 +11,6 @@ const Brighten = () => {
 
   const handleInputChange = (event) => {
     const file = event.target.files[0];
-    console.log(file);
     setInputFile(file);
   };
 
@@ -20,7 +20,7 @@ const Brighten = () => {
 
   const handleBrighten = async () => {
     if (!inputFile) {
-      console.log("No input file selected");
+      toast.info("No input file selected");
       return;
     }
     const fileReader = new FileReader();
@@ -31,10 +31,10 @@ const Brighten = () => {
         brightenValue: brightenValue,
       });
 
-      if (response && response.success) {
-        console.log("Image brightened successfully");
+      if (response) {
+        toast.success("Image brightened successfully");
       } else {
-        console.log("Failed to brighten the image");
+        toast.error("Failed to brighten the image");
       }
     };
     fileReader.readAsDataURL(inputFile); // Read the file as a data URL

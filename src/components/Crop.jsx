@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api";
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 
 const Crop = () => {
   const cardStyle =
@@ -13,7 +14,6 @@ const Crop = () => {
 
   const handleInputChange = (event) => {
     const file = event.target.files[0];
-    console.log(file);
     setInputFile(file);
   };
 
@@ -32,7 +32,7 @@ const Crop = () => {
 
   const handleCrop = async () => {
     if (!inputFile) {
-      console.log("No input file selected");
+      toast.info("No input file selected");
       return;
     }
     const fileReader = new FileReader();
@@ -46,10 +46,10 @@ const Crop = () => {
         height: height,
       });
 
-      if (response && response.success) {
-        console.log("Image cropped successfully");
+      if (response) {
+        toast.success("Image cropped successfully");
       } else {
-        console.log("Failed to crop the image");
+        toast.error("Failed to crop the image");
       }
     };
     fileReader.readAsDataURL(inputFile); // Read the file as a data URL
@@ -82,7 +82,7 @@ const Crop = () => {
       </div>
       <div>
         <label htmlFor="Y" className="mx-3">
-          X :
+          Y :
         </label>
         <input
           type="number"
@@ -94,7 +94,7 @@ const Crop = () => {
       </div>
       <div>
         <label htmlFor="width" className="mx-3">
-          X :
+          Width :
         </label>
         <input
           type="number"
@@ -106,7 +106,7 @@ const Crop = () => {
       </div>
       <div>
         <label htmlFor="height" className="mx-3">
-          X :
+          Height :
         </label>
         <input
           type="number"

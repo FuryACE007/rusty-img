@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 const Invert = () => {
   const cardStyle =
@@ -9,13 +10,12 @@ const Invert = () => {
 
   const handleInputChange = (event) => {
     const file = event.target.files[0];
-    console.log(file);
     setInputFile(file);
   };
 
   const handleInvert = async () => {
     if (!inputFile) {
-      console.log("No input file selected");
+      toast.info("No input file selected");
       return;
     }
     const fileReader = new FileReader();
@@ -25,10 +25,10 @@ const Invert = () => {
         infile: base64Data,
       });
 
-      if (response && response.success) {
-        console.log("Image inverted successfully");
+      if (response) {
+        toast.success("Image inverted successfully");
       } else {
-        console.log("Failed to invert the image");
+        toast.error("Failed to invert the image");
       }
     };
     fileReader.readAsDataURL(inputFile); // Read the file as a data URL
